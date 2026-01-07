@@ -1,0 +1,21 @@
+# Core dependencies
+numpy>=1.24.0
+scipy>=1.10.0
+soundfile>=0.12.0
+noisereduce>=3.0.0
+pydub>=0.25.0
+
+# Machine Learning
+torch>=2.0.0
+numba>=0.57.0
+
+# GUI
+customtkinter>=5.2.0
+CTkMessagebox>=2.5
+
+# Audio processing
+pedalboard>=0.8.0
+pyloudnorm>=0.1.0
+
+# Optional: for building standalone exe
+# pyinstaller>=6.0.0
