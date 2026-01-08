@@ -15,9 +15,10 @@
   - Fallback to noisereduce
 
 - 🎛️ **Smart Processing**
+  - **16K Fast (V18)**: Recommended - best quality and speed
   - Auto mode: analyzes noise floor and selects best algorithm
-  - Fast mode (V18): optimized for speed
   - 2-Pass mode: for high-noise recordings
+  - Post-Process Cleanup (V19): Digital Black for clean silence
 
 - 🔊 **Audio Enhancement**
   - Anti-drone (low frequency noise removal)
@@ -54,7 +55,7 @@ Comparison of original vs enhanced audio waveform.
 ### Quick Start
 ```bash
 # Clone repository
-git clone https://github.com/YOUR_USERNAME/audio-studio-ai-pro.git
+git clone https://github.com/dhammawatthumpra-coder/audio-studio-ai-pro.git
 cd audio-studio-ai-pro
 
 # Install dependencies
@@ -68,8 +69,8 @@ python gui_enhancer_v4.py
 
 | Mode | Description | Best For |
 |------|-------------|----------|
-| Auto | Analyzes noise and auto-selects | General use |
-| Fast (V18) | V18 Smart - fastest | Quick processing |
+| **Fast (V18)** | V18 Smart - **recommended** | General use, best quality |
+| Auto | Analyzes noise and auto-selects | Unknown noise level |
 | Standard (V12) | Digital Black + CRNN | Clean audio |
 | Reduce Hiss (V14) | V12 + HF reduction | Sibilant noise |
 | High Noise (2-Pass) | V7 → V12 | Noisy recordings |
@@ -85,11 +86,12 @@ audio-studio-ai-pro/
 ├── constants.py           # Configuration & language
 ├── 8k/                    # 8K Hybrid Engine
 │   └── core/              # Models & processors
-├── 16k_v3/                # 16K V3 Engine
+├── 16k_v3/                # 16K V3 Engine (Recommended)
 │   ├── core/              # CRNN models
 │   ├── audio_processor_v12_blended.py
 │   ├── audio_processor_v14_combined.py
-│   ├── audio_processor_v18_smart.py
+│   ├── audio_processor_v18_smart.py   # Fast mode
+│   ├── audio_processor_v19_cleanup.py # Post-Process
 │   └── enhance.py         # CLI tool
 ├── presets/               # User presets
 └── docs/                  # Screenshots
