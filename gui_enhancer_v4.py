@@ -244,8 +244,8 @@ class AdvancedSettingsWindow(ctk.CTkToplevel):
         self.engine_menu.set(current_engine)
         self.engine_menu.pack(side="left", padx=10)
         
-        # Status indicators - 8K is recommended
-        status_text = "🏆 8K Hybrid recommended for speech"
+        # Status indicators - 16K Fast is recommended
+        status_text = "🏆 16K Fast (V18) recommended for speech"
         status_color = "#27ae60"
         
         self.engine_status = ctk.CTkLabel(
