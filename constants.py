@@ -106,7 +106,10 @@ class DenoiseSettings:
     omlsa_mode: str = "protected"  # balanced, conservative, aggressive, protected
     
     # 16K Engine mode (used when engine=HYBRID_16K)
-    engine_16k_mode: str = "auto"  # auto, v12, v14_hf, 2pass, 2pass_hf
+    engine_16k_mode: str = "auto"  # auto, fast, v12, v14_hf, 2pass, 2pass_hf
+    
+    # Post-process cleanup (V19 Digital Black Cleanup)
+    post_cleanup_enabled: bool = False
 
 
 @dataclass
@@ -257,6 +260,7 @@ LANG = {
         'chk_anti_drone': "ลดเสียงลากยาว",
         'chk_transient': "ลดเสียงไมค์ช็อต/Click",
         'chk_dehum': "ลดเสียงจี่ไฟ",
+        'chk_post_cleanup': "Digital Black Cleanup",
         'chk_adaptive': "โหมด AI (ช้าแต่แม่นยำ)",
         
         'status_ready': "พร้อมใช้งาน",
@@ -307,6 +311,7 @@ LANG = {
         'chk_anti_drone': "Anti-Drone",
         'chk_transient': "Mic Shock/Transient",
         'chk_dehum': "Remove Hum",
+        'chk_post_cleanup': "Digital Black Cleanup",
         'chk_adaptive': "AI Mode (Slow but Accurate)",
         
         'status_ready': "Ready",

@@ -799,6 +799,11 @@ class AudioEnhancerApp(ctk.CTk):
         if self.config.eq.dehum_enabled:
             self.dehum_switch.select()
         
+        self.post_cleanup_switch = ctk.CTkSwitch(toggles_frame, text="Post-Process Cleanup")
+        self.post_cleanup_switch.pack(anchor="w", pady=3)
+        if getattr(self.config.denoise, 'post_cleanup_enabled', False):
+            self.post_cleanup_switch.select()
+        
         # Advanced button
         self.advanced_btn = ctk.CTkButton(
             self.options_frame,
@@ -1024,6 +1029,11 @@ class AudioEnhancerApp(ctk.CTk):
         else:
             self.dehum_switch.deselect()
         
+        if getattr(self.config.denoise, 'post_cleanup_enabled', False):
+            self.post_cleanup_switch.select()
+        else:
+            self.post_cleanup_switch.deselect()
+        
         self.format_menu.set(self.config.output.format)
     
     def _save_preset_dialog(self):
@@ -1150,6 +1160,7 @@ class AudioEnhancerApp(ctk.CTk):
         self.config.denoise.transient_suppression_enabled = bool(self.transient_switch.get())
         self.config.truncate.enabled = bool(self.truncate_switch.get())
         self.config.eq.dehum_enabled = bool(self.dehum_switch.get())
+        self.config.denoise.post_cleanup_enabled = bool(self.post_cleanup_switch.get())
         self.config.output.format = self.format_menu.get()
     
     def _start_processing(self):

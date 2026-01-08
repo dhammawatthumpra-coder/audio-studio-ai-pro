@@ -188,6 +188,20 @@ class AudioProcessor:
                 data = self._apply_truncate(data, sr, config.truncate, log)
             progress(0.8)
             
+            # Step 9.5: Post-Cleanup (V19 Digital Black) - หลัง Truncate
+            post_cleanup_enabled = getattr(config.denoise, 'post_cleanup_enabled', False)
+            if post_cleanup_enabled:
+                log("🧹 Post-Process Cleanup...")
+                if data.ndim == 2:
+                    # Stereo: process each channel
+                    left = self._apply_post_cleanup(data[:, 0], sr, log)
+                    right = self._apply_post_cleanup(data[:, 1], sr, lambda x: None)
+                    data = np.column_stack([left, right])
+                else:
+                    # Mono
+                    data = self._apply_post_cleanup(data, sr, log)
+            progress(0.85)
+            
             # Step 10: Apply Stereo Mode (90%)
             from constants import StereoMode
             stereo_mode = config.output.stereo_mode
@@ -513,6 +527,80 @@ class AudioProcessor:
         
         log("   ✓ ลดเสียงลากยาวเสร็จสิ้น")
         return result
+    
+    def _apply_post_cleanup(
+        self,
+        data: np.ndarray,
+        sr: int,
+        log: Callable[[str], None]
+    ) -> np.ndarray:
+        """
+        Apply V19 Digital Black Cleanup
+        ================================
+        Post-processor สำหรับเก็บกวาด residual noise จากไฟล์ที่ผ่าน denoise แล้ว
+        ทำให้ช่วง silence เป็น digital black (0.0)
+        """
+        import math
+        import time
+        from scipy.signal import resample_poly
+        
+        log("🧹 Post-Process Cleanup (Digital Black)...")
+        
+        try:
+            # Temporarily add engine path for V19
+            engine_dir = os.path.join(os.path.dirname(__file__), '16k_v3')
+            if engine_dir not in sys.path:
+                sys.path.insert(0, engine_dir)
+                path_added = True
+            else:
+                path_added = False
+            
+            try:
+                original_length = len(data)
+                start_time = time.time()
+                
+                # Resample to 16kHz for V19
+                if sr != 16000:
+                    log(f"   > Resample {sr}Hz → 16kHz")
+                    gcd = math.gcd(16000, sr)
+                    audio_16k = resample_poly(data, 16000 // gcd, sr // gcd).astype(np.float32)
+                else:
+                    audio_16k = data.astype(np.float32)
+                
+                # Import and run V19
+                from audio_processor_v19_cleanup import AudioProcessorV19Cleanup
+                processor = AudioProcessorV19Cleanup(mode="ultra")
+                cleaned_16k, info = processor.process(audio_16k, 16000)
+                
+                # Resample back
+                if sr != 16000:
+                    log(f"   > Resample 16kHz → {sr}Hz")
+                    gcd = math.gcd(sr, 16000)
+                    cleaned = resample_poly(cleaned_16k, sr // gcd, 16000 // gcd).astype(np.float32)
+                else:
+                    cleaned = cleaned_16k
+                
+                # Match length
+                if len(cleaned) > original_length:
+                    cleaned = cleaned[:original_length]
+                elif len(cleaned) < original_length:
+                    cleaned = np.pad(cleaned, (0, original_length - len(cleaned)))
+                
+                process_time = time.time() - start_time
+                speed = (original_length / sr) / process_time
+                
+                log(f"   > Speed: {speed:.1f}x realtime")
+                log(f"   ✓ Post-Cleanup completed (Black: {info.get('black_pct', 0):.1f}%)")
+                
+                return cleaned
+                
+            finally:
+                if path_added:
+                    sys.path.remove(engine_dir)
+                    
+        except Exception as e:
+            log(f"   ⚠️ Post-Cleanup failed: {str(e)}")
+            return data  # Return original on failure
     
     def _apply_denoise(
         self,

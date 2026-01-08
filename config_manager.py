@@ -20,7 +20,8 @@ from constants import (
 # v5: Added DenoiseEngine.MOE
 # v6: Added transient_suppression_enabled (V3.0.2)
 # v7: Added engine_16k_mode (V4.0.0)
-CONFIG_VERSION = 7
+# v8: Added post_cleanup_enabled (V4.0.1)
+CONFIG_VERSION = 8
 
 
 class ConfigManager:
@@ -379,6 +380,10 @@ class ConfigManager:
                 # Add engine_16k_mode if missing
                 if 'engine_16k_mode' not in data_dict:
                     instance.engine_16k_mode = 'auto'
+                # === V4.0.1 Migration ===
+                # Add post_cleanup_enabled if missing
+                if 'post_cleanup_enabled' not in data_dict:
+                    instance.post_cleanup_enabled = False
             
             return instance
         
