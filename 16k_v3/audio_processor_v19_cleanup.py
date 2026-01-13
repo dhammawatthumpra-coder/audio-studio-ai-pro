@@ -261,6 +261,51 @@ def filter_isolated_in_silence(mask, energy, min_silence_frames, max_amp_ratio, 
     return filtered
 
 
+@jit(nopython=True, cache=True)
+def protect_speech_bridges(mask, max_gap_frames):
+    """
+    Protect short gaps between speech regions.
+    
+    If a gap is:
+    1. Shorter than max_gap_frames
+    2. AND has speech on BOTH sides
+    
+    Then fill it in (protect as speech).
+    
+    This prevents cutting mid-word pauses or soft consonants.
+    """
+    n = len(mask)
+    protected = mask.copy()
+    
+    i = 0
+    while i < n:
+        if mask[i] < 0.5:
+            # Found start of gap
+            gap_start = i
+            while i < n and mask[i] < 0.5:
+                i += 1
+            gap_end = i
+            
+            gap_length = gap_end - gap_start
+            
+            # Check if short gap
+            if gap_length <= max_gap_frames:
+                # Check if speech exists BEFORE the gap
+                has_speech_before = gap_start > 0 and mask[gap_start - 1] > 0.5
+                
+                # Check if speech exists AFTER the gap
+                has_speech_after = gap_end < n and mask[gap_end] > 0.5
+                
+                # If bridged by speech on both sides, fill the gap
+                if has_speech_before and has_speech_after:
+                    for j in range(gap_start, gap_end):
+                        protected[j] = 1.0
+        else:
+            i += 1
+    
+    return protected
+
+
 # ============================================
 # V19 CLEANUP PROCESSOR
 # ============================================
@@ -473,6 +518,18 @@ class AudioProcessorV19Cleanup:
         isolated_removed = int(np.sum(mask_before > 0.5) - np.sum(mask > 0.5))
         if isolated_removed > 0:
             print(f"        Removed {isolated_removed} isolated-in-silence frames")
+        
+        # Step 3.7: Protect short gaps between speech (bridge protection)
+        print("  [3.7/5] Protecting speech bridges...")
+        max_gap_ms = 700.0  # Protect gaps up to 700ms
+        max_gap_frames = int(max_gap_ms / self.frame_ms)
+        
+        mask_before_bridge = mask.copy()
+        mask = protect_speech_bridges(mask, max_gap_frames)
+        
+        bridges_protected = int(np.sum(mask > 0.5) - np.sum(mask_before_bridge > 0.5))
+        if bridges_protected > 0:
+            print(f"        Protected {bridges_protected} bridge frames")
         
         # Step 4: Extend margins
         print("  [4/5] Extending margins...")
