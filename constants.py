@@ -251,7 +251,7 @@ LANG = {
         'lbl_format': "รูปแบบไฟล์:",
         'lbl_output_folder': "โฟลเดอร์ปลายทาง:",
         'lbl_preset': "Preset:",
-        'lbl_drop_hint': "ลากไฟล์มาวางที่นี่",
+        'lbl_drop_hint': "คลิกเพื่อเลือกไฟล์",
         
         'chk_normalize': "ปรับความดังอัตโนมัติ",
         'chk_denoise': "ลดเสียงรบกวน",
@@ -302,7 +302,7 @@ LANG = {
         'lbl_format': "Format:",
         'lbl_output_folder': "Output Folder:",
         'lbl_preset': "Preset:",
-        'lbl_drop_hint': "Drag & Drop files here",
+        'lbl_drop_hint': "Click to Select Files",
         
         'chk_normalize': "Auto Normalize",
         'chk_denoise': "Noise Reduction",

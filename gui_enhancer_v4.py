@@ -56,7 +56,7 @@ class DragDropFrame(ctk.CTkFrame):
         # สำหรับตอนนี้ใช้ button แทน
         self.drop_label = ctk.CTkLabel(
             self,
-            text="🎵 ลากไฟล์มาวางที่นี่\nหรือคลิกเพื่อเลือกไฟล์",
+            text="🎵 คลิกเพื่อเลือกไฟล์",
             font=ctk.CTkFont(size=14),
             text_color="gray"
         )
@@ -958,6 +958,7 @@ class AudioEnhancerApp(ctk.CTk):
         self.dehum_switch.configure(text=L['chk_dehum'])
         
         self.format_label.configure(text=L['lbl_format'])
+        self.drop_zone.drop_label.configure(text=L.get('lbl_drop_hint', 'Click to Select Files'))
         self.start_btn.configure(text=f"🚀 {L['btn_start']}")
         self.open_folder_btn.configure(text=f"📂 {L['btn_open_folder']}")
         self.status_label.configure(text=L['status_ready'])

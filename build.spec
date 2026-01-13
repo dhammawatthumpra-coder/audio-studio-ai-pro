@@ -13,11 +13,11 @@ SPEC_DIR = os.path.dirname(os.path.abspath(SPEC))
 # Site-packages path (adjust if needed)
 SITE_PACKAGES = r'C:\Users\ACER\miniconda3\Lib\site-packages'
 
-# Collect all V3 files
+# Collect all V4 files
 added_files = [
     # Core directories
     ('8k', '8k'),
-    ('16k', '16k'),
+    ('16k_v3', '16k_v3'),
     ('presets', 'presets'),
     
     # Assets
@@ -60,7 +60,7 @@ hiddenimports = [
 ]
 
 a = Analysis(
-    ['gui_enhancer_v3.py'],
+    ['gui_enhancer_v4.py'],
     pathex=[SPEC_DIR],
     binaries=[
         # Bundle FFmpeg
@@ -97,7 +97,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='AudioEnhancerV3',
+    name='AudioStudioAIPro',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -119,5 +119,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='AudioEnhancerV3',
+    name='AudioStudioAIPro',
 )
